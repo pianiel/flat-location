@@ -4,26 +4,24 @@ import {default as update} from "react-addons-update";
 import {default as canUseDOM} from "can-use-dom";
 import {default as _} from "lodash";
 
-import {GoogleMapLoader, GoogleMap, Marker} from "react-google-maps";
+import {GoogleMapLoader, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
 import {triggerEvent} from "react-google-maps/lib/utils";
 
-/*
- * This is the modify version of:
- * https://developers.google.com/maps/documentation/javascript/examples/event-arguments
- *
- * Add <script src="https://maps.googleapis.com/maps/api/js"></script> to your HTML to provide google.maps reference
- */
+
 export default class GettingStarted extends Component {
 
     state = {
         markers: [{
             position: {
-                lat: 25.0112183,
-                lng: 121.52067570000001,
+                lat: 50,
+                lng: 20,
             },
-            key: "Taiwan",
+            key: "Poland",
             defaultAnimation: 2
         }],
+        origin: new google.maps.LatLng(51.5, -0.1),
+        destination: new google.maps.LatLng(51.51, -0.12),
+        directions: null,
     }
 
     constructor (props, context) {
@@ -36,6 +34,25 @@ export default class GettingStarted extends Component {
             return;
         }
         window.addEventListener("resize", this.handleWindowResize);
+
+
+
+        const DirectionsService = new google.maps.DirectionsService();
+
+        DirectionsService.route({
+            origin: this.state.origin,
+            destination: this.state.destination,
+            travelMode: google.maps.TravelMode.DRIVING
+        }, (result, status) => {
+            if (status == google.maps.DirectionsStatus.OK) {
+                this.setState({
+                    directions: result
+                });
+                console.log('fetched directions');
+            } else {
+                console.error(`error fetching directions ${ result }`);
+            }
+        });
     }
 
     componentWillUnmount () {
@@ -91,6 +108,8 @@ export default class GettingStarted extends Component {
     }
 
     render () {
+        const {origin, directions} = this.state;
+
         return (
             <GoogleMapLoader
                 containerElement={
@@ -105,8 +124,8 @@ export default class GettingStarted extends Component {
                 googleMapElement={
                     <GoogleMap
                         ref={(map) => (this._googleMapComponent = map) && console.log(map.getZoom())}
-                        defaultZoom={3}
-                        defaultCenter={{lat: -25.363882, lng: 131.044922}}
+                        defaultZoom={13}
+                        defaultCenter={origin}
                         onClick={::this.handleMapClick}>
                                 {this.state.markers.map((marker, index) => {
                                      return (
@@ -115,6 +134,7 @@ export default class GettingStarted extends Component {
                                              onRightclick={this.handleMarkerRightclick.bind(this, index)} />
                                      );
                                  })}
+                    { directions ? <DirectionsRenderer directions={directions} /> : null }
                     </GoogleMap>
                 }
             />
