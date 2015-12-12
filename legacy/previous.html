@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Szukanie mieszkania</title>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <link rel="stylesheet" type="text/css" href="main.css">
+  </head>
+  <body>
+    <div id="panel">
+    <b>Środek transportu: </b>
+    <select id="mode" onchange="recalculate();">
+      <option value="WALKING">Pieszo</option>
+      <option value="BICYCLING">Rowerem</option>
+      <option value="TRANSIT">Komunikacja</option>
+      <option value="DRIVING">Auto</option>
+    </select>
+    <b>Test: </b>
+    <select id="start" onchange="calcFromSelected();">
+      <option value="" disabled selected>Wybierz</option>
+      <option value="51.521985, -0.110212">Clerkenwell</option>
+    </select>
+    <b>Adres mieszkania:</b>
+    <input type="text" id="flat_loc" onkeypress="searchKeyPress(event);" />
+    </div>
+    <div id="directions">
+      <div id="piotr-directions-panel" class="directions"></div>
+      <div id="karo-directions-panel" class="directions"></div>
+    </div>
+    <div id="map-canvas"></div>
+  </body>
+  <script src="index.js" type="textjavascript"></script>
+</html>
