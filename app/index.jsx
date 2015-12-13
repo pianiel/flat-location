@@ -11,14 +11,6 @@ import {triggerEvent} from "react-google-maps/lib/utils";
 export default class GettingStarted extends Component {
 
     state = {
-        markers: [{
-            position: {
-                lat: 50,
-                lng: 20,
-            },
-            key: "Poland",
-            defaultAnimation: 2
-        }],
         directionsService: new google.maps.DirectionsService(),
         myrdleStreet: new google.maps.LatLng(51.5155358, -0.0654131),
         travelMode: google.maps.TravelMode.WALKING,
@@ -101,17 +93,8 @@ export default class GettingStarted extends Component {
      * Go and try click now.
      */
     handleMapClick (event) {
-        var {markers} = this.state;
-        markers = update(markers, {
-            $push: [
-                {
-                    position: event.latLng,
-                    defaultAnimation: 2,
-                    key: Date.now(),// Add a key property for: http://fb.me/react-warning-keys
-                },
-            ],
-        });
-        this.setState({ markers });
+        this.setState({ myrdleStreet: event.latLng });
+        this.fetchDirectionsAll();
 
     }
 
@@ -134,7 +117,7 @@ export default class GettingStarted extends Component {
         const {myrdleStreet, data} = this.state;
 
         const directionsOpts = {
-            draggable: true,
+            draggable: false,
             polylineOptions: {
                 strokeOpacity: 0.7,
                 strokeWeight: 5,
@@ -144,13 +127,7 @@ export default class GettingStarted extends Component {
         return (
             <GoogleMapLoader
                 containerElement={
-                    <div
-                        {...this.props}
-                        style={{
-                                height: "100%",
-                                width: "100%"
-                            }}
-                              />
+                    <div {...this.props} style={{height: "100%", width: "100%"}} />
                 }
                 googleMapElement={
                     <GoogleMap
