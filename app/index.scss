@@ -1,4 +1,19 @@
-html, body, #app {
+html, body, #app, #container {
     height: 100%;
     width: 100%;
+}
+
+
+#container {
+    display: -webkit-flex;
+    display: flex;
+}
+
+#info {
+    width: 200px;
+}
+
+#map {
+    -webkit-flex: 1;
+    flex: 1;
 }

@@ -7,25 +7,26 @@ import {default as _} from "lodash";
 import {GoogleMapLoader, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
 import {triggerEvent} from "react-google-maps/lib/utils";
 
+import {default as InfoBox} from './info.jsx';
+
 
 export default class GettingStarted extends Component {
 
     state = {
         directionsService: new google.maps.DirectionsService(),
-        myrdleStreet: new google.maps.LatLng(51.5155358, -0.0654131),
+        newFlatLoc: 'E1 1HL', //
+        mapCenter: new google.maps.LatLng(51.5154542, -0.0655901),
         travelMode: google.maps.TravelMode.WALKING,
         data: [
             {
                 name: 'Piotr',
-                office: new google.maps.LatLng(51.5248645, -0.0916461),
+                office: 'E1W 1LA', //new google.maps.LatLng(51.5248645, -0.0916461),
                 colour: '#0000FF',
-                directions: null,
             },
             {
                 name: 'Karolina',
-                office: new google.maps.LatLng(51.5264841, -0.0804561),
+                office: 'EC2A 3AT', //new google.maps.LatLng(51.5264841, -0.0804561),
                 colour: '#FF0000',
-                directions: null,
             },
         ],
     }
@@ -40,7 +41,7 @@ export default class GettingStarted extends Component {
     fetchDirectionsAll () {
         this.state.data.forEach((person) => {
             let {name, office} = person;
-            this.fetchDirections(name, this.state.myrdleStreet, office, this.state.travelMode);
+            this.fetchDirections(name, this.state.newFlatLoc, office, this.state.travelMode);
         });
     }
 
@@ -93,47 +94,34 @@ export default class GettingStarted extends Component {
      * Go and try click now.
      */
     handleMapClick (event) {
-        this.setState({ myrdleStreet: event.latLng });
+        this.setState({ newFlatLoc: event.latLng });
         this.fetchDirectionsAll();
-
-    }
-
-    handleMarkerRightclick (index, event) {
-        /*
-         * All you modify is data, and the view is driven by data.
-         * This is so called data-driven-development. (And yes, it's now in
-         * web front end and even with google maps API.)
-         */
-        var {markers} = this.state;
-        markers = update(markers, {
-            $splice: [
-                [index, 1]
-            ],
-        });
-        this.setState({ markers });
     }
 
     render () {
-        const {myrdleStreet, data} = this.state;
+        const {newFlatLoc, mapCenter, data} = this.state;
 
         const directionsOpts = {
             draggable: false,
             polylineOptions: {
                 strokeOpacity: 0.7,
-                strokeWeight: 5,
+                strokeWeight: 4,
             }
         };
 
         return (
+            <div id="container">
+            <InfoBox people={data} />
             <GoogleMapLoader
+                id="map"
                 containerElement={
                     <div {...this.props} style={{height: "100%", width: "100%"}} />
                 }
                 googleMapElement={
                     <GoogleMap
                         ref={(map) => (this._googleMapComponent = map) && console.log(map.getZoom())}
-                        defaultZoom={13}
-                        defaultCenter={myrdleStreet}
+                        defaultZoom={9}
+                        defaultCenter={mapCenter}
                         onClick={::this.handleMapClick} >
                     { _.map(data, (person) => {
                         const dirOpts = {
@@ -143,7 +131,7 @@ export default class GettingStarted extends Component {
                                 strokeColor: person.colour,
                             }
                         };
-                        if (person.directions !== null)
+                        if (person.directions !== undefined)
                             return (
                                 <DirectionsRenderer
                                     options={dirOpts}
@@ -153,6 +141,7 @@ export default class GettingStarted extends Component {
                     </GoogleMap>
                 }
             />
+            </div>
         );
     }
 }
