@@ -19,14 +19,62 @@ export default class GettingStarted extends Component {
             key: "Poland",
             defaultAnimation: 2
         }],
-        origin: new google.maps.LatLng(51.5, -0.1),
-        destination: new google.maps.LatLng(51.51, -0.12),
-        directions: null,
+        directionsService: new google.maps.DirectionsService(),
+        myrdleStreet: new google.maps.LatLng(51.5155358, -0.0654131),
+        travelMode: google.maps.TravelMode.WALKING,
+        data: [
+            {
+                name: 'Piotr',
+                office: new google.maps.LatLng(51.5248645, -0.0916461),
+                colour: '#0000FF',
+                directions: null,
+            },
+            {
+                name: 'Karolina',
+                office: new google.maps.LatLng(51.5264841, -0.0804561),
+                colour: '#FF0000',
+                directions: null,
+            },
+        ],
     }
 
     constructor (props, context) {
         super(props, context);
         this.handleWindowResize = _.throttle(::this.handleWindowResize, 500);
+
+        this.fetchDirectionsAll();
+    }
+
+    fetchDirectionsAll () {
+        this.state.data.forEach((person) => {
+            let {name, office} = person;
+            this.fetchDirections(name, this.state.myrdleStreet, office, this.state.travelMode);
+        });
+    }
+
+    fetchDirections (name, origin, destination, travelMode) {
+        this.state.directionsService.route({
+            origin: origin,
+            destination: destination,
+            travelMode: travelMode
+        }, (result, status) => {
+            if (status === google.maps.DirectionsStatus.OK) {
+                console.log('fetched directions');
+                this.updateDirections(name, result);
+            } else {
+                console.error(`error fetching directions ${ result }`);
+            }
+        });
+    }
+
+    updateDirections (name, directions) {
+        let newData = _.map(this.state.data, (person) => {
+            if (person.name === name) {
+                return {...person, directions: directions};
+            }
+            return person;
+        })
+        this.setState({data: newData});
     }
 
     componentDidMount () {
@@ -34,25 +82,6 @@ export default class GettingStarted extends Component {
             return;
         }
         window.addEventListener("resize", this.handleWindowResize);
-
-
-
-        const DirectionsService = new google.maps.DirectionsService();
-
-        DirectionsService.route({
-            origin: this.state.origin,
-            destination: this.state.destination,
-            travelMode: google.maps.TravelMode.DRIVING
-        }, (result, status) => {
-            if (status == google.maps.DirectionsStatus.OK) {
-                this.setState({
-                    directions: result
-                });
-                console.log('fetched directions');
-            } else {
-                console.error(`error fetching directions ${ result }`);
-            }
-        });
     }
 
     componentWillUnmount () {
@@ -84,12 +113,6 @@ export default class GettingStarted extends Component {
         });
         this.setState({ markers });
 
-        if (3 === markers.length) {
-            this.props.toast(
-                "Right click on the marker to remove it",
-                "Also check the code!"
-            );
-        }
     }
 
     handleMarkerRightclick (index, event) {
@@ -108,7 +131,15 @@ export default class GettingStarted extends Component {
     }
 
     render () {
-        const {origin, directions} = this.state;
+        const {myrdleStreet, data} = this.state;
+
+        const directionsOpts = {
+            draggable: true,
+            polylineOptions: {
+                strokeOpacity: 0.7,
+                strokeWeight: 5,
+            }
+        };
 
         return (
             <GoogleMapLoader
@@ -125,16 +156,23 @@ export default class GettingStarted extends Component {
                     <GoogleMap
                         ref={(map) => (this._googleMapComponent = map) && console.log(map.getZoom())}
                         defaultZoom={13}
-                        defaultCenter={origin}
-                        onClick={::this.handleMapClick}>
-                                {this.state.markers.map((marker, index) => {
-                                     return (
-                                         <Marker
-                                             {...marker}
-                                             onRightclick={this.handleMarkerRightclick.bind(this, index)} />
-                                     );
-                                 })}
-                    { directions ? <DirectionsRenderer directions={directions} /> : null }
+                        defaultCenter={myrdleStreet}
+                        onClick={::this.handleMapClick} >
+                    { _.map(data, (person) => {
+                        const dirOpts = {
+                            ...directionsOpts,
+                            polylineOptions: {
+                                ...directionsOpts.polylineOptions,
+                                strokeColor: person.colour,
+                            }
+                        };
+                        if (person.directions !== null)
+                            return (
+                                <DirectionsRenderer
+                                    options={dirOpts}
+                                    directions={person.directions} />
+                            );
+                    }) }
                     </GoogleMap>
                 }
             />
