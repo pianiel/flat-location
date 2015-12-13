@@ -4,10 +4,8 @@ import {default as update} from "react-addons-update";
 import {default as canUseDOM} from "can-use-dom";
 import {default as _} from "lodash";
 
-import {GoogleMapLoader, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
-import {triggerEvent} from "react-google-maps/lib/utils";
-
 import {default as InfoBox} from './info.jsx';
+import {default as DirectionsMap} from './map.jsx';
 
 
 export default class GettingStarted extends Component {
@@ -17,7 +15,7 @@ export default class GettingStarted extends Component {
         newFlatLoc: 'E1 1HL', //
         mapCenter: new google.maps.LatLng(51.5154542, -0.0655901),
         travelMode: google.maps.TravelMode.WALKING,
-        data: [
+        people: [
             {
                 name: 'Piotr',
                 office: 'E1W 1LA', //new google.maps.LatLng(51.5248645, -0.0916461),
@@ -33,13 +31,11 @@ export default class GettingStarted extends Component {
 
     constructor (props, context) {
         super(props, context);
-        this.handleWindowResize = _.throttle(::this.handleWindowResize, 500);
-
         this.fetchDirectionsAll();
     }
 
     fetchDirectionsAll () {
-        this.state.data.forEach((person) => {
+        this.state.people.forEach((person) => {
             let {name, office} = person;
             this.fetchDirections(name, this.state.newFlatLoc, office, this.state.travelMode);
         });
@@ -52,7 +48,6 @@ export default class GettingStarted extends Component {
             travelMode: travelMode
         }, (result, status) => {
             if (status === google.maps.DirectionsStatus.OK) {
-                console.log('fetched directions');
                 this.updateDirections(name, result);
             } else {
                 console.error(`error fetching directions ${ result }`);
@@ -61,86 +56,31 @@ export default class GettingStarted extends Component {
     }
 
     updateDirections (name, directions) {
-        let newData = _.map(this.state.data, (person) => {
+        let newData = _.map(this.state.people, (person) => {
             if (person.name === name) {
+//                debugger;
                 return {...person, directions: directions};
             }
             return person;
         })
-        this.setState({data: newData});
+        this.setState({people: newData});
     }
 
-    componentDidMount () {
-        if (!canUseDOM) {
-            return;
-        }
-        window.addEventListener("resize", this.handleWindowResize);
-    }
-
-    componentWillUnmount () {
-        if (!canUseDOM) {
-            return;
-        }
-        window.removeEventListener("resize", this.handleWindowResize);
-    }
-
-    handleWindowResize () {
-        console.log("handleWindowResize", this._googleMapComponent);
-        triggerEvent(this._googleMapComponent, "resize");
-    }
-
-    /*
-     * This is called when you click on the map.
-     * Go and try click now.
-     */
     handleMapClick (event) {
         this.setState({ newFlatLoc: event.latLng });
         this.fetchDirectionsAll();
     }
 
     render () {
-        const {newFlatLoc, mapCenter, data} = this.state;
-
-        const directionsOpts = {
-            draggable: false,
-            polylineOptions: {
-                strokeOpacity: 0.7,
-                strokeWeight: 4,
-            }
-        };
+        const {newFlatLoc, mapCenter, people} = this.state;
 
         return (
             <div id="container">
-            <InfoBox people={data} />
-            <GoogleMapLoader
-                id="map"
-                containerElement={
-                    <div {...this.props} style={{height: "100%", width: "100%"}} />
-                }
-                googleMapElement={
-                    <GoogleMap
-                        ref={(map) => (this._googleMapComponent = map) && console.log(map.getZoom())}
-                        defaultZoom={9}
-                        defaultCenter={mapCenter}
-                        onClick={::this.handleMapClick} >
-                    { _.map(data, (person) => {
-                        const dirOpts = {
-                            ...directionsOpts,
-                            polylineOptions: {
-                                ...directionsOpts.polylineOptions,
-                                strokeColor: person.colour,
-                            }
-                        };
-                        if (person.directions !== undefined)
-                            return (
-                                <DirectionsRenderer
-                                    options={dirOpts}
-                                    directions={person.directions} />
-                            );
-                    }) }
-                    </GoogleMap>
-                }
-            />
+                <InfoBox people={people} />
+                <DirectionsMap mapCenter={mapCenter}
+                               people={people}
+                               onMapClick={::this.handleMapClick}
+                />
             </div>
         );
     }
