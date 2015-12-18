@@ -22,18 +22,29 @@ export default class InfoBox extends Component {
     }
 }
 
+function Duration (props) {
+    return (
+        <div> {Math.floor(props.value / 60.0 * 100) / 100} min </div>
+    );
+}
+
+function Distance (props) {
+    return (
+        <div> {Math.floor(props.value / 1000.0 * 10) / 10} km </div>
+    );
+}
 
 class PersonInfo extends Component {
 
     render () {
         const { person } = this.props;
+        const leg = person.directions.routes[0].legs[0];
+
         return (
             <li>
-                {
-                    person.name + ' ' +
-                    person.directions.routes[0].legs[0].duration.value + ' ' +
-                    person.directions.routes[0].legs[0].distance.value
-                }
+                <div>{person.name}</div>
+                <Duration value={leg.duration.value} />
+                <Distance value={leg.distance.value} />
             </li>
         );
     }

@@ -12,6 +12,7 @@ export default class GettingStarted extends Component {
 
     state = {
         directionsService: new google.maps.DirectionsService(),
+        geocoder: new google.maps.Geocoder(),
         newFlatLoc: 'E1 1HL', //
         mapCenter: new google.maps.LatLng(51.5154542, -0.0655901),
         travelMode: google.maps.TravelMode.WALKING,
@@ -26,12 +27,18 @@ export default class GettingStarted extends Component {
                 office: 'EC2A 3AT', //new google.maps.LatLng(51.5264841, -0.0804561),
                 colour: '#FF0000',
             },
+            {
+                name: 'Gabi',
+                office: 'EC3M 7HA',
+                colour: '#00FFFF',
+            }
         ],
     }
 
     constructor (props, context) {
         super(props, context);
         this.fetchDirectionsAll();
+        this.geocodeAll();
     }
 
     fetchDirectionsAll () {
@@ -62,9 +69,34 @@ export default class GettingStarted extends Component {
                 return {...person, directions: directions};
             }
             return person;
-        })
+        });
         this.setState({people: newData});
     }
+
+
+    geocodeAll () {
+        this.state.people.forEach((person) => this.geocode(person.name, person.office));
+    }
+
+    geocode(name, address) {
+        this.state.geocoder.geocode({ address: address + ', London' }, (result, status) => {
+            if (status === google.maps.GeocoderStatus.OK) {
+                let location = result[0].geometry.location;
+                let newData = _.map(this.state.people, (person) => {
+                    if (person.name === name) {
+                        return {...person, officeLatLng: location};
+                    }
+                    return person;
+                });
+                this.setState({people: newData});
+
+            } else {
+                console.log('geocoding not successful');
+            }
+        });
+    }
+
+
 
     handleMapClick (event) {
         this.setState({ newFlatLoc: event.latLng });
