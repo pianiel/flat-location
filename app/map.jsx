@@ -33,6 +33,19 @@ export default class DirectionsMap extends Component {
         triggerEvent(this._googleMapComponent, "resize");
     }
 
+
+    fitBoundsToLocations (location) {
+        let latLngList = [
+            ..._.map(this.props.people, (person) => person.officeLatLng),
+            location,
+        ];
+        let bounds = new google.maps.LatLngBounds ();
+        for (var i = 0; i < latLngList.length; i++) {
+            bounds.extend(latLngList[i]);
+        }
+        this._googleMapComponent.fitBounds(bounds);
+    }
+
     render () {
 
         const { people, mapCenter, onMapClick } = this.props;
@@ -57,17 +70,8 @@ export default class DirectionsMap extends Component {
                         defaultZoom={14}
                         defaultCenter={mapCenter}
                         onClick={(event) => {
-                                let result = onMapClick(event);
-                                let latLngList = [
-                                    ..._.map(people, (person) => person.officeLatLng),
-                                    event.latLng,
-                                ];
-                                let bounds = new google.maps.LatLngBounds ();
-                                for (var i = 0; i < latLngList.length; i++) {
-                                    bounds.extend(latLngList[i]);
-                                }
-                                this._googleMapComponent.fitBounds(bounds);
-                                return result;
+                                onMapClick(event);
+                                this.fitBoundsToLocations(event.latLng);
                             }} >
                                 { _.map(people, (person) => {
                                       const dirOpts = {
