@@ -1,4 +1,5 @@
 import {default as React, Component} from "react";
+import {Table} from 'react-bootstrap';
 
 
 export default class InfoBox extends Component {
@@ -8,44 +9,60 @@ export default class InfoBox extends Component {
 
         return (
             <div id="info">
-                <ul>
-                    {_.map(people, (person) => {
-                         if (person.directions !== undefined) {
-                             return (
-                                <PersonInfo person={person} key={'info-' + person.name} />
-                             );
-                         }
-                     })}
-                </ul>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Who</th>
+                            <th>Duration (walking)</th>
+                            <th>Distance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {_.map(people, (person) => {
+                             if (person.directions !== undefined) {
+                                 return (
+                                     <PersonRow person={person} key={'info-' + person.name} />
+                                 );
+                             }
+                         })}
+                    </tbody>
+                </Table>
             </div>
         );
     }
 }
 
+function formatMetric(value, units, precision) {
+    const factor = Math.pow(10, precision);
+    return Math.floor(value / units * factor) / factor;
+}
+
 function Duration (props) {
+    const precision = 1;
     return (
-        <div> {Math.floor(props.value / 60.0 * 100) / 100} min </div>
+        <span> {formatMetric(props.value, 60, precision)} min </span>
     );
 }
 
 function Distance (props) {
+    const precision = 1;
     return (
-        <div> {Math.floor(props.value / 1000.0 * 10) / 10} km </div>
+        <span> {formatMetric(props.value, 1000, precision)} km </span>
     );
 }
 
-class PersonInfo extends Component {
+class PersonRow extends Component {
 
     render () {
         const { person } = this.props;
         const leg = person.directions.routes[0].legs[0];
 
         return (
-            <li>
-                <div>{person.name}</div>
-                <Duration value={leg.duration.value} />
-                <Distance value={leg.distance.value} />
-            </li>
+            <tr>
+                <td>{person.name}</td>
+                <td> <Duration value={leg.duration.value} /> </td>
+                <td> <Distance value={leg.distance.value} /> </td>
+            </tr>
         );
     }
 
