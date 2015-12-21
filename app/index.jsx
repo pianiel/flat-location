@@ -108,11 +108,23 @@ export default class GettingStarted extends Component {
 
         return (
             <div id="container">
-                <InfoBox people={people} />
-                <DirectionsMap mapCenter={mapCenter}
-                               people={people}
-                               onMapClick={::this.handleMapClick}
-                />
+                <header>
+                    <div>
+                        <h1>London Flat Hunting</h1>
+                    </div>
+                    <div>
+                        <h4>Hello</h4>
+                    </div>
+                </header>
+                <div id="content">
+                    <div id="sidebar">
+                        <InfoBox people={people} />
+                    </div>
+                    <DirectionsMap mapCenter={mapCenter}
+                                   people={people}
+                                   onMapClick={::this.handleMapClick}
+                    />
+                </div>
             </div>
         );
     }
