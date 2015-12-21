@@ -2,12 +2,12 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-    entry: path.resolve(__dirname, 'app/index.js'),
+    entry: path.resolve(__dirname, 'app/app.jsx'),
     output: {path: path.resolve(__dirname, 'build'), filename: 'bundle.js'},
     module: {
         preLoaders: [
             {
-                test: /(\.js$|\.jsx$)/,
+                test: /(\.jsx?$)/,
                 exclude: /node_modules/,
                 loader: 'eslint-loader'
             }
