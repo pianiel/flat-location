@@ -91,3 +91,21 @@ export default class DirectionsMap extends Component {
         );
     }
 }
+
+
+export class MapsDisclaimer extends Component {
+    render () {
+        if (this.props.container !== undefined) {
+            let route = this.props.container.routes[0];
+
+            return (
+                <div id="disclaimer">
+                    <p><small>{route.warnings[0]}</small></p>
+                    <p><small>{route.copyrights}</small></p>
+                </div>
+            );
+        } else {
+            return <div></div>;
+        }
+    }
+}

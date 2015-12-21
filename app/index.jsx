@@ -5,7 +5,7 @@ import {default as canUseDOM} from "can-use-dom";
 import {default as _} from "lodash";
 
 import {default as InfoBox} from './info.jsx';
-import {default as DirectionsMap} from './map.jsx';
+import {default as DirectionsMap, MapsDisclaimer} from './map.jsx';
 
 
 export default class GettingStarted extends Component {
@@ -119,6 +119,7 @@ export default class GettingStarted extends Component {
                 <div id="content">
                     <div id="sidebar">
                         <InfoBox people={people} />
+                        <MapsDisclaimer container={people[0].directions} />
                     </div>
                     <DirectionsMap mapCenter={mapCenter}
                                    people={people}
