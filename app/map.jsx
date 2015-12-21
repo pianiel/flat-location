@@ -3,7 +3,7 @@ import {default as React, Component} from "react";
 import {default as canUseDOM} from "can-use-dom";
 import {default as _} from "lodash";
 
-import {GoogleMapLoader, GoogleMap, Marker, DirectionsRenderer} from "react-google-maps";
+import {GoogleMapLoader, GoogleMap, Marker, DirectionsRenderer, SearchBox} from "react-google-maps";
 import {triggerEvent} from "react-google-maps/lib/utils";
 
 
@@ -48,7 +48,7 @@ export default class DirectionsMap extends Component {
 
     render () {
 
-        const { people, mapCenter, onMapClick } = this.props;
+        const { people, mapCenter, onMapClick, onSearchBoxChanged } = this.props;
 
         const directionsOpts = {
             draggable: false,
@@ -57,6 +57,21 @@ export default class DirectionsMap extends Component {
                 strokeOpacity: 0.7,
                 strokeWeight: 4,
             }
+        };
+
+        const searchBoxStyle = {
+            border: "1px solid transparent",
+            borderRadius: "1px",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+            boxSizing: "border-box",
+            MozBoxSizing: "border-box",
+            fontSize: "14px",
+            height: "32px",
+            marginTop: "9px",
+            outline: "none",
+            padding: "0 12px",
+            textOverflow: "ellipses",
+            width: "400px",
         };
 
         return (
@@ -73,6 +88,18 @@ export default class DirectionsMap extends Component {
                                 onMapClick(event);
                                 this.fitBoundsToLocations(event.latLng);
                             }} >
+                        <SearchBox
+                            controlPosition={google.maps.ControlPosition.TOP_LEFT}
+                            bounds={this._googleMapComponent ? this._googleMapComponent.getBounds() : null}
+                            placeholder="Enter desired location"
+                            ref="searchBox"
+                            onPlacesChanged={() => {
+                                    onSearchBoxChanged(this.refs.searchBox);
+                                    const places = this.refs.searchBox.getPlaces();
+                                    this.fitBoundsToLocations(places[0].geometry.location)
+                                }}
+                            style={searchBoxStyle}
+                                />
                                 { _.map(people, (person) => {
                                       const dirOpts = {
                                           ...directionsOpts,

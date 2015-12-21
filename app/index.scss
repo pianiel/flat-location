@@ -1,19 +1,36 @@
-html, body, #app, #container {
+@import "./_bootstrap_variables";
+@import "./_bootstrap_override";
+
+html, body, #app, #container, #content {
     height: 100%;
     width: 100%;
 }
 
 
-#container {
+#content {
     display: -webkit-flex;
     display: flex;
 }
 
-#info {
-    width: 200px;
+#sidebar {
+    width: 300px;
 }
 
 #map {
     -webkit-flex: 1;
     flex: 1;
+}
+
+header {
+    padding: 10px;
+    background-color: #FBFBFB;
+    border-bottom: 1px #DDD solid;
+}
+
+#disclaimer {
+    text-align: center;
+}
+
+#disclaimer p {
+    display: inline-block;
 }

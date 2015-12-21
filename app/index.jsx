@@ -101,6 +101,9 @@ export default class GettingStarted extends Component {
     handleMapClick (event) {
         this.setState({ newFlatLoc: event.latLng });
         this.fetchDirectionsAll();
+    handleSearchBoxChanged (searchBox) {
+        const places = searchBox.getPlaces()
+        this.handleMapClick({ latLng: places[0].geometry.location });
     }
 
     render () {
@@ -124,6 +127,7 @@ export default class GettingStarted extends Component {
                     <DirectionsMap mapCenter={mapCenter}
                                    people={people}
                                    onMapClick={::this.handleMapClick}
+                                   onSearchBoxChanged={::this.handleSearchBoxChanged}
                     />
                 </div>
             </div>
