@@ -39,6 +39,7 @@ export default class DirectionsMap extends Component {
 
         const directionsOpts = {
             draggable: false,
+            preserveViewport: true,
             polylineOptions: {
                 strokeOpacity: 0.7,
                 strokeWeight: 4,
@@ -52,22 +53,22 @@ export default class DirectionsMap extends Component {
                                  }
                 googleMapElement={
                     <GoogleMap
-                        ref={(map) => (this._googleMapComponent = map)}
-                        defaultZoom={9}
+                        ref={(map) => this._googleMapComponent = map}
+                        defaultZoom={14}
                         defaultCenter={mapCenter}
-                    onClick={(event) => {
-                        let result = onMapClick(event);
-                        let latLngList = [
-                            ..._.map(people, (person) => person.officeLatLng),
-                            event.latLng,
-                        ];
-                        let bounds = new google.maps.LatLngBounds ();
-                        for (var i = 0; i < latLngList.length; i++) {
-                            bounds.extend(latLngList[i]);
-                        }
-                        this._googleMapComponent.fitBounds(bounds);
-                        return result;
-                    }} >
+                        onClick={(event) => {
+                                let result = onMapClick(event);
+                                let latLngList = [
+                                    ..._.map(people, (person) => person.officeLatLng),
+                                    event.latLng,
+                                ];
+                                let bounds = new google.maps.LatLngBounds ();
+                                for (var i = 0; i < latLngList.length; i++) {
+                                    bounds.extend(latLngList[i]);
+                                }
+                                this._googleMapComponent.fitBounds(bounds);
+                                return result;
+                            }} >
                                 { _.map(people, (person) => {
                                       const dirOpts = {
                                           ...directionsOpts,

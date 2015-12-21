@@ -19,7 +19,7 @@ export default class GettingStarted extends Component {
         people: [
             {
                 name: 'Piotr',
-                office: 'E1W 1LA', //new google.maps.LatLng(51.5248645, -0.0916461),
+                office: 'E1W 1AZ', //new google.maps.LatLng(51.5248645, -0.0916461),
                 colour: '#0000FF',
             },
             {
