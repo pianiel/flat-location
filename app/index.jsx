@@ -1,5 +1,6 @@
 import {default as React, Component} from "react";
 import {default as update} from "react-addons-update";
+import {Panel} from 'react-bootstrap';
 
 import {default as canUseDOM} from "can-use-dom";
 import {default as _} from "lodash";
@@ -8,12 +9,13 @@ import {default as InfoBox} from './info.jsx';
 import {default as DirectionsMap, MapsDisclaimer} from './map.jsx';
 
 
-export default class GettingStarted extends Component {
+export default class FlatHunting extends Component {
 
     state = {
         directionsService: new google.maps.DirectionsService(),
         geocoder: new google.maps.Geocoder(),
         newFlatLoc: 'E1 1HL', //
+        newFlatName: 'E1 1HL',
         mapCenter: new google.maps.LatLng(51.5154542, -0.0655901),
         travelMode: google.maps.TravelMode.WALKING,
         people: [
@@ -79,7 +81,7 @@ export default class GettingStarted extends Component {
     }
 
     geocode(name, address) {
-        this.state.geocoder.geocode({ address: address + ', London' }, (result, status) => {
+        this.state.geocoder.geocode({ address }, (result, status) => {
             if (status === google.maps.GeocoderStatus.OK) {
                 let location = result[0].geometry.location;
                 let newData = _.map(this.state.people, (person) => {
@@ -91,23 +93,37 @@ export default class GettingStarted extends Component {
                 this.setState({people: newData});
 
             } else {
-                console.log('geocoding not successful');
+                console.log('Cannot find coordinates for given address');
             }
         });
     }
 
-
+    reverseGeocode (location) {
+        this.state.geocoder.geocode({ location }, (result, status) => {
+            if (status === google.maps.GeocoderStatus.OK) {
+                if (result.length > 0) {
+                    let location = result[0].formatted_address;
+                    this.setState({ newFlatName: location });
+                }
+            } else {
+                console.log('Cannot convert new flat coordinates to an address');
+            }
+        });
+    }
 
     handleMapClick (event) {
         this.setState({ newFlatLoc: event.latLng });
         this.fetchDirectionsAll();
+        this.reverseGeocode(event.latLng);
+    }
+
     handleSearchBoxChanged (searchBox) {
         const places = searchBox.getPlaces()
         this.handleMapClick({ latLng: places[0].geometry.location });
     }
 
     render () {
-        const {newFlatLoc, mapCenter, people} = this.state;
+        const {newFlatLoc, newFlatName, mapCenter, people} = this.state;
 
         return (
             <div id="container">
@@ -116,11 +132,12 @@ export default class GettingStarted extends Component {
                         <h1>London Flat Hunting</h1>
                     </div>
                     <div>
-                        <h4>Hello</h4>
+                        <h4>Enter address or click on the map to see distances for this location</h4>
                     </div>
                 </header>
                 <div id="content">
                     <div id="sidebar">
+                        <Panel><strong>New flat:</strong> {newFlatName}</Panel>
                         <InfoBox people={people} />
                         <MapsDisclaimer container={people[0].directions} />
                     </div>
