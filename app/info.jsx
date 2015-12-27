@@ -12,6 +12,7 @@ export default class InfoBox extends Component {
                 <Table>
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Who</th>
                             <th>Duration (walking)</th>
                             <th>Distance</th>
@@ -56,9 +57,14 @@ class PersonRow extends Component {
     render () {
         const { person } = this.props;
         const leg = person.directions.routes[0].legs[0];
+        const colourBoxStyle = {
+            backgroundColor: person.colour,
+            width: '15px',
+        };
 
         return (
             <tr>
+                <td style={colourBoxStyle}></td>
                 <td>{person.name}</td>
                 <td> <Duration value={leg.duration.value} /> </td>
                 <td> <Distance value={leg.distance.value} /> </td>
