@@ -22,17 +22,22 @@ export default class FlatHunting extends Component {
             {
                 name: 'Piotr',
                 office: 'E1W 1AZ', //new google.maps.LatLng(51.5248645, -0.0916461),
-                colour: '#0000FF',
+                colour: '#3C0063',
             },
             {
                 name: 'Karolina',
                 office: 'EC2A 3AT', //new google.maps.LatLng(51.5264841, -0.0804561),
-                colour: '#FF0000',
+                colour: '#C70028',
             },
             {
                 name: 'Gabi',
                 office: 'EC3M 7HA',
-                colour: '#00FFFF',
+                colour: '#00AFB2',
+            },
+            {
+                name: 'Vilius',
+                office: 'EC3M 4AJ',
+                colour: '#FF8726',
             }
         ],
     }
