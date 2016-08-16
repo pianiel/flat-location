@@ -1,12 +1,12 @@
-import {default as React, Component} from "react";
-import {default as update} from "react-addons-update";
-import {Panel} from 'react-bootstrap';
+import React, { Component } from "react";
+import update from "react-addons-update";
+import { Panel } from 'react-bootstrap';
 
-import {default as canUseDOM} from "can-use-dom";
-import {default as _} from "lodash";
+import canUseDOM from "can-use-dom";
+import _ from "lodash";
 
-import {default as InfoBox} from './info.jsx';
-import {default as DirectionsMap, MapsDisclaimer} from './map.jsx';
+import InfoBox from './info.jsx';
+import DirectionsMap, { MapsDisclaimer } from './map.jsx';
 
 
 export default class FlatHunting extends Component {

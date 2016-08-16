@@ -1,10 +1,14 @@
-import {default as React, Component} from "react";
-
-import {default as canUseDOM} from "can-use-dom";
-import {default as _} from "lodash";
-
-import {GoogleMapLoader, GoogleMap, Marker, DirectionsRenderer, SearchBox} from "react-google-maps";
-import {triggerEvent} from "react-google-maps/lib/utils";
+import React, { Component } from "react";
+import canUseDOM from "can-use-dom";
+import _ from "lodash";
+import {
+    GoogleMapLoader,
+    GoogleMap,
+    Marker,
+    DirectionsRenderer,
+    SearchBox,
+} from "react-google-maps";
+import { triggerEvent } from "react-google-maps/lib/utils";
 
 
 export default class DirectionsMap extends Component {

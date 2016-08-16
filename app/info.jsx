@@ -1,5 +1,5 @@
-import {default as React, Component} from "react";
-import {Table} from 'react-bootstrap';
+import React, { Component } from "react";
+import { Table } from 'react-bootstrap';
 
 
 export default class InfoBox extends Component {
