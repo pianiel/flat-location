@@ -10,6 +10,7 @@ import {
 } from "react-google-maps";
 import { triggerEvent } from "react-google-maps/lib/utils";
 
+import { colours } from './colours';
 
 export default class DirectionsMap extends Component {
 
@@ -37,6 +38,11 @@ export default class DirectionsMap extends Component {
         triggerEvent(this._googleMapComponent, "resize");
     }
 
+
+    handleMapClick (event) {
+        this.props.onMapClick(event);
+        this.fitBoundsToLocations(event.latLng);
+    }
 
     fitBoundsToLocations (location) {
         let latLngList = [
@@ -78,69 +84,61 @@ export default class DirectionsMap extends Component {
             width: "400px",
         };
 
+        const commutingDirections = people.map((person, index) => {
+            const dirOpts = {
+                ...directionsOpts,
+                polylineOptions: {
+                    ...directionsOpts.polylineOptions,
+                    strokeColor: colours[index],
+                }
+            };
+            if (person.directions !== undefined)
+                return (
+                    <DirectionsRenderer
+                        key={'directions_renderer-' + person.name}
+                        options={dirOpts}
+                        directions={person.directions}
+                    />
+                );
+        })
+
+        const searchBox = <SearchBox
+                              controlPosition={google.maps.ControlPosition.TOP_LEFT}
+                              bounds={this._googleMapComponent ? this._googleMapComponent.getBounds() : null}
+                              placeholder="Enter desired location"
+                              ref="searchBox"
+                              onPlacesChanged={() => {
+                                      onSearchBoxChanged(this.refs.searchBox);
+                                      const places = this.refs.searchBox.getPlaces();
+                                      this.fitBoundsToLocations(places[0].geometry.location)
+                                  }}
+                              style={searchBoxStyle}
+                          />;
+
+        const mapElement = <GoogleMap
+                               ref={(map) => this._googleMapComponent = map}
+                               defaultZoom={14}
+                               defaultCenter={mapCenter}
+                               onClick={ ::this.handleMapClick } >
+                        { searchBox }
+                        { commutingDirections }
+        </GoogleMap>;
+
         return (
             <GoogleMapLoader
-                containerElement={
-                    <div id="map" {...this.props} style={{height: "100%", width: "100%"}} />
-                                 }
-                googleMapElement={
-                    <GoogleMap
-                        ref={(map) => this._googleMapComponent = map}
-                        defaultZoom={14}
-                        defaultCenter={mapCenter}
-                        onClick={(event) => {
-                                onMapClick(event);
-                                this.fitBoundsToLocations(event.latLng);
-                            }} >
-                        <SearchBox
-                            controlPosition={google.maps.ControlPosition.TOP_LEFT}
-                            bounds={this._googleMapComponent ? this._googleMapComponent.getBounds() : null}
-                            placeholder="Enter desired location"
-                            ref="searchBox"
-                            onPlacesChanged={() => {
-                                    onSearchBoxChanged(this.refs.searchBox);
-                                    const places = this.refs.searchBox.getPlaces();
-                                    this.fitBoundsToLocations(places[0].geometry.location)
-                                }}
-                            style={searchBoxStyle}
-                                />
-                                { _.map(people, (person) => {
-                                      const dirOpts = {
-                                          ...directionsOpts,
-                                          polylineOptions: {
-                                              ...directionsOpts.polylineOptions,
-                                              strokeColor: person.colour,
-                                          }
-                                      };
-                                      if (person.directions !== undefined)
-                                          return (
-                                              <DirectionsRenderer
-                                                  key={'directions_renderer-' + person.name}
-                                                  options={dirOpts}
-                                                  directions={person.directions} />
-                                          );
-                                  }) }
-                    </GoogleMap>
-                                 }
+                containerElement={ <div id="map" {...this.props} /> }
+                googleMapElement={ mapElement }
             />
         );
     }
 }
 
 
-export class MapsDisclaimer extends Component {
-    render () {
-        if (this.props.container !== undefined) {
-            let route = this.props.container.routes[0];
-
-            return (
-                <div id="disclaimer">
-                    <p><small>{route.warnings[0]}</small></p>
-                    <p><small>{route.copyrights}</small></p>
-                </div>
-            );
-        } else {
-            return <div></div>;
-        }
-    }
+export function MapsDisclaimer(props) {
+    return (
+        <div id="disclaimer">
+            <div>{props.route.warnings[0]}</div>
+            <div>{props.route.copyrights}</div>
+        </div>
+    );
 }

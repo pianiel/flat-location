@@ -1,14 +1,13 @@
 @import "./_bootstrap_variables";
 @import "./_bootstrap_override";
 
-html, body, #app, #container, #content {
+html, body, #app, #container, #content, #map {
     height: 100%;
     width: 100%;
 }
 
 
 #content {
-    display: -webkit-flex;
     display: flex;
 }
 
@@ -17,7 +16,6 @@ html, body, #app, #container, #content {
 }
 
 #map {
-    -webkit-flex: 1;
     flex: 1;
 }
 
@@ -33,4 +31,8 @@ header {
 
 #disclaimer p {
     display: inline-block;
+}
+
+.person-row {
+    border-left: 50px solid;
 }

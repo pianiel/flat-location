@@ -22,22 +22,18 @@ export default class FlatHunting extends Component {
             {
                 name: 'Piotr',
                 office: 'E1W 1AZ', //new google.maps.LatLng(51.5248645, -0.0916461),
-                colour: '#3C0063',
             },
             {
                 name: 'Karolina',
                 office: 'EC2A 3AT', //new google.maps.LatLng(51.5264841, -0.0804561),
-                colour: '#C70028',
             },
             {
                 name: 'Gabi',
                 office: 'EC3M 7HA',
-                colour: '#00AFB2',
             },
             {
                 name: 'Vilius',
                 office: 'EC3M 4AJ',
-                colour: '#FF8726',
             }
         ],
     }
@@ -130,6 +126,9 @@ export default class FlatHunting extends Component {
     render () {
         const {newFlatLoc, newFlatName, mapCenter, people} = this.state;
 
+        const sampleDirections = people[0].directions;
+        const route = sampleDirections && sampleDirections.routes[0];
+
         return (
             <div id="container">
                 <header>
@@ -144,7 +143,7 @@ export default class FlatHunting extends Component {
                     <div id="sidebar">
                         <Panel><strong>New flat:</strong> {newFlatName}</Panel>
                         <InfoBox people={people} />
-                        <MapsDisclaimer container={people[0].directions} />
+                        { route && <MapsDisclaimer route={ route } /> }
                     </div>
                     <DirectionsMap mapCenter={mapCenter}
                                    people={people}
